@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pádel Reservas - Panel</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header id="encabezado" class="encabezado"></header>
+
+  <main class="contenedor">
+    <section class="tarjeta">
+      <h1>Panel de administración</h1>
+      <div class="filtros">
+        <label>Fecha
+          <input type="date" id="fecha">
+        </label>
+        <button type="button" id="actualizar" class="boton">Actualizar</button>
+      </div>
+      <p id="mensaje" class="mensaje" hidden></p>
+
+      <div class="tarjetas-dashboard">
+        <div class="dato destacado"><span>Total recaudado</span><strong id="d-total">-</strong></div>
+        <div class="dato"><span>Pagos totales</span><strong id="d-totales">-</strong><small id="d-totales-cant"></small></div>
+        <div class="dato"><span>Señas cobradas</span><strong id="d-senas">-</strong><small id="d-senas-cant"></small></div>
+        <div class="dato"><span>Saldos cobrados</span><strong id="d-saldos">-</strong><small id="d-saldos-cant"></small></div>
+        <div class="dato alerta"><span>Pagos parciales pendientes</span><strong id="d-pendientes">-</strong><small id="d-pendientes-cant"></small></div>
+        <div class="dato"><span>Retenido por cancelaciones</span><strong id="d-retenidos">-</strong><small id="d-retenidos-cant"></small></div>
+      </div>
+
+      <h2>Ingresos por cancha</h2>
+      <div class="tabla-scroll">
+        <table>
+          <thead><tr><th>Club</th><th>Cancha</th><th>Monto</th></tr></thead>
+          <tbody id="tabla-ingresos"></tbody>
+        </table>
+      </div>
+      <p id="sin-ingresos" class="ayuda" hidden>Sin movimientos</p>
+    </section>
+
+    <section class="tarjeta">
+      <h2>Reservas del día</h2>
+      <div class="tabla-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Cliente</th><th>Email</th><th>Club</th><th>Cancha</th><th>Hora</th>
+              <th>Precio</th><th>Pagado</th><th>Saldo</th><th>Estado</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-reservas"></tbody>
+        </table>
+      </div>
+      <p id="sin-reservas" class="ayuda" hidden>No hay reservas para esta fecha.</p>
+    </section>
+
+    <section class="tarjeta angosta">
+      <h2>Crear administrador</h2>
+      <form id="form-admin" class="formulario">
+        <label>Nombre
+          <input type="text" id="admin-nombre" required>
+        </label>
+        <label>Email
+          <input type="email" id="admin-email" required>
+        </label>
+        <label>Contraseña (mínimo 6 caracteres)
+          <input type="password" id="admin-password" required minlength="6" autocomplete="new-password">
+        </label>
+        <button type="submit" class="boton">Crear administrador</button>
+      </form>
+      <p id="mensaje-admin" class="mensaje" hidden></p>
+    </section>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

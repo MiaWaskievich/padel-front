@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pádel Reservas - Ingresar</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="pagina-login">
+  <main class="caja-login">
+    <h1>🎾 Pádel Reservas</h1>
+    <p class="subtitulo">Reservá tu cancha en segundos</p>
+
+    <div class="pestanas">
+      <button type="button" id="pestana-login" class="pestana activa">Ingresar</button>
+      <button type="button" id="pestana-registro" class="pestana">Crear cuenta</button>
+    </div>
+
+    <form id="form-login" class="formulario">
+      <label>Email
+        <input type="email" id="login-email" required autocomplete="email">
+      </label>
+      <label>Contraseña
+        <input type="password" id="login-password" required autocomplete="current-password">
+      </label>
+      <button type="submit" class="boton">Ingresar</button>
+    </form>
+
+    <form id="form-registro" class="formulario" hidden>
+      <label>Nombre
+        <input type="text" id="registro-nombre" required autocomplete="name">
+      </label>
+      <label>Email
+        <input type="email" id="registro-email" required autocomplete="email">
+      </label>
+      <label>Contraseña (mínimo 6 caracteres)
+        <input type="password" id="registro-password" required minlength="6" autocomplete="new-password">
+      </label>
+      <button type="submit" class="boton">Crear cuenta</button>
+    </form>
+
+    <p id="mensaje" class="mensaje" hidden></p>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

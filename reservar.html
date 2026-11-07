@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pádel Reservas - Reservar</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header id="encabezado" class="encabezado"></header>
+
+  <main class="contenedor">
+    <section id="confirmacion" class="tarjeta confirmacion" hidden>
+      <h2>¡Reserva confirmada!</h2>
+      <p>Te enviamos un mail con el detalle.</p>
+      <div class="tabla-scroll">
+        <table>
+          <thead>
+            <tr><th>Club</th><th>Cancha</th><th>Fecha</th><th>Hora</th><th>Precio</th><th>Abonado</th><th>Saldo</th></tr>
+          </thead>
+          <tbody id="detalle-confirmacion"></tbody>
+        </table>
+      </div>
+      <p class="totales" id="totales-confirmacion"></p>
+      <button type="button" id="cerrar-confirmacion" class="boton secundario">Cerrar</button>
+    </section>
+
+    <div class="dos-columnas">
+      <section class="tarjeta">
+        <h1>Reservar turno</h1>
+        <div class="filtros">
+          <label>Club
+            <select id="club"></select>
+          </label>
+          <label>Fecha
+            <input type="date" id="fecha">
+          </label>
+        </div>
+
+        <p id="mensaje-grilla" class="mensaje" hidden></p>
+
+        <div class="referencias">
+          <span><i class="muestra libre"></i> Libre</span>
+          <span><i class="muestra ocupado"></i> Ocupado</span>
+          <span><i class="muestra en-carrito"></i> En tu carrito</span>
+        </div>
+
+        <div class="tabla-scroll">
+          <table id="grilla" class="grilla"></table>
+        </div>
+        <p class="ayuda">La grilla se actualiza sola cada 10 segundos.</p>
+      </section>
+
+      <aside class="tarjeta carrito">
+        <h2>Carrito</h2>
+        <p id="carrito-vacio" class="ayuda">Todavía no agregaste turnos. Tocá un turno libre de la grilla.</p>
+        <ul id="lista-carrito" class="lista-carrito"></ul>
+
+        <fieldset class="tipo-pago">
+          <legend>Forma de pago</legend>
+          <label><input type="radio" name="tipo_pago" value="sena" checked> Seña (30%)</label>
+          <label><input type="radio" name="tipo_pago" value="total"> Pago total</label>
+        </fieldset>
+
+        <dl class="resumen">
+          <dt>Total</dt><dd id="resumen-total">$ 0,00</dd>
+          <dt>A pagar ahora</dt><dd id="resumen-ahora">$ 0,00</dd>
+          <dt>Saldo pendiente</dt><dd id="resumen-saldo">$ 0,00</dd>
+        </dl>
+
+        <button type="button" id="ir-a-pagar" class="boton ancho">Ir a pagar</button>
+
+        <form id="form-pago" class="formulario pago" hidden>
+          <h3>Datos de la tarjeta</h3>
+          <p class="mensaje aviso">Pago simulado – no se realiza ningún cobro</p>
+          <label>Titular
+            <input type="text" id="tarjeta-titular" autocomplete="off">
+          </label>
+          <label>Número de tarjeta
+            <input type="text" id="tarjeta-numero" inputmode="numeric" maxlength="19" placeholder="1234 5678 9012 3456" autocomplete="off">
+          </label>
+          <div class="fila">
+            <label>Vencimiento
+              <input type="text" id="tarjeta-vencimiento" maxlength="5" placeholder="MM/AA" autocomplete="off">
+            </label>
+            <label>CVV
+              <input type="password" id="tarjeta-cvv" inputmode="numeric" maxlength="3" placeholder="123" autocomplete="off">
+            </label>
+          </div>
+          <p id="mensaje-pago" class="mensaje" hidden></p>
+          <button type="submit" id="confirmar-pago" class="boton ancho">Confirmar y pagar</button>
+          <button type="button" id="cancelar-pago" class="boton secundario ancho">Volver</button>
+        </form>
+      </aside>
+    </div>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/reservar.js"></script>
+</body>
+</html>
