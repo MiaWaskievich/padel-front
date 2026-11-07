@@ -56,6 +56,20 @@
     </section>
 
     <section class="tarjeta angosta">
+      <h2>Horarios de turnos</h2>
+      <p class="ayuda">Los turnos duran 90 minutos. Los cambios se ven al instante en la grilla de reservas.</p>
+      <ul id="lista-horarios" class="lista-carrito"></ul>
+      <p id="sin-horarios" class="ayuda" hidden>No hay horarios cargados.</p>
+      <form id="form-horario" class="filtros">
+        <label>Nuevo horario
+          <input type="time" id="nuevo-horario" required>
+        </label>
+        <button type="submit" class="boton">Agregar horario</button>
+      </form>
+      <p id="mensaje-horarios" class="mensaje" hidden></p>
+    </section>
+
+    <section class="tarjeta angosta">
       <h2>Crear administrador</h2>
       <form id="form-admin" class="formulario">
         <label>Nombre

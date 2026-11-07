@@ -1,11 +1,16 @@
 // js/admin.js
-// Lógica de admin.html (solo administradores): dashboard de caja, reservas del día y alta de admins.
+// Lógica de admin.html (solo administradores): dashboard de caja, reservas del día,
+// horarios de los turnos y alta de admins.
 // Endpoints:
-//   GET  /api/admin/dashboard?fecha=
-//   GET  /api/admin/reservas?fecha=
-//   PUT  /api/reservas/:id/pagar-saldo   (el admin puede cobrar el saldo de cualquier reserva)
-//   PUT  /api/reservas/:id/cancelar
-//   POST /api/admin/usuarios
+//   GET    /api/admin/dashboard?fecha=
+//   GET    /api/admin/reservas?fecha=
+//   PUT    /api/reservas/:id/pagar-saldo   (el admin puede cobrar el saldo de cualquier reserva)
+//   PUT    /api/reservas/:id/cancelar
+//   GET    /api/admin/horarios
+//   POST   /api/admin/horarios
+//   DELETE /api/admin/horarios/:id
+//   POST   /api/admin/usuarios
+// Los horarios que se cargan acá son los que muestra la grilla de reservar.html (js/reservar.js).
 // Usa js/config.js y js/api.js (apiFetch, formatearPlata, escaparHTML, etc.).
 
 const inputFecha = document.getElementById('fecha');
@@ -110,6 +115,60 @@ async function cancelar(reserva) {
   actualizar();
 }
 
+// ---------- Horarios de los turnos ----------
+
+const mensajeHorarios = document.getElementById('mensaje-horarios');
+
+async function cargarHorarios() {
+  let horarios;
+  try {
+    horarios = await apiFetch('/admin/horarios');
+  } catch (error) {
+    mostrarMensaje(mensajeHorarios, error.message, 'error');
+    return;
+  }
+
+  const lista = document.getElementById('lista-horarios');
+  lista.replaceChildren();
+  for (const horario of horarios) {
+    const li = document.createElement('li');
+    const texto = document.createElement('strong');
+    texto.textContent = horario.hora;
+    li.append(texto, crearBoton('Quitar', 'boton peligro chico', () => quitarHorario(horario)));
+    lista.appendChild(li);
+  }
+  document.getElementById('sin-horarios').hidden = horarios.length > 0;
+}
+
+async function quitarHorario(horario) {
+  if (!confirm(`¿Quitar el horario de las ${horario.hora}?`)) return;
+  try {
+    const respuesta = await apiFetch(`/admin/horarios/${horario.id}`, { method: 'DELETE' });
+    mostrarMensaje(mensajeHorarios, respuesta.mensaje, 'exito');
+  } catch (error) {
+    // Si tiene reservas activas el back responde 409 con el motivo
+    mostrarMensaje(mensajeHorarios, error.message, 'error');
+  }
+  cargarHorarios();
+}
+
+// El input type="time" ya devuelve 'HH:MM', el formato que espera el back
+document.getElementById('form-horario').addEventListener('submit', async (evento) => {
+  evento.preventDefault();
+  const formulario = evento.target;
+  try {
+    const nuevo = await apiFetch('/admin/horarios', {
+      method: 'POST',
+      body: JSON.stringify({ hora: document.getElementById('nuevo-horario').value })
+    });
+    mostrarMensaje(mensajeHorarios, `Horario ${nuevo.hora} agregado.`, 'exito');
+    formulario.reset();
+  } catch (error) {
+    mostrarMensaje(mensajeHorarios, error.message, 'error');
+  }
+  cargarHorarios();
+});
+
 // Alta de otro administrador
 document.getElementById('form-admin').addEventListener('submit', async (evento) => {
   evento.preventDefault();
@@ -139,4 +198,5 @@ if (exigirRol('admin')) {
     actualizar();
   });
   actualizar();
+  cargarHorarios();
 }
