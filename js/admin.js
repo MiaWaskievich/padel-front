@@ -13,16 +13,18 @@
 // Los horarios que se cargan acá son los que muestra la grilla de reservar.html (js/reservar.js).
 // Usa js/config.js y js/api.js (apiFetch, formatearPlata, escaparHTML, etc.).
 
-const inputFecha = document.getElementById('fecha');
-const mensaje = document.getElementById('mensaje');
+const inputFecha = document.getElementById('fecha'); //busca en el HTML el elemento con id="fecha": 
+// el <input type="date"> del panel. Lo guarda en inputFecha para no tener que buscarlo cada vez.
+const mensaje = document.getElementById('mensaje'); //es el mensaje donde se muestran los errores o avisos del dashboard.
 
 // Texto "N pagos" / "1 pago" para debajo de cada monto
 function cantidad(n, singular, plural) {
-  return `${n} ${n === 1 ? singular : plural}`;
+  return `${n} ${n === 1 ? singular : plural}`; //Si n es 1 usa singular, sino, plural.
 }
 
-async function cargarDashboard() {
-  const d = await apiFetch(`/admin/dashboard?fecha=${inputFecha.value}`);
+async function cargarDashboard() { //le pide al back los números de caja del día elegido y 
+  //los escribe en los 6 cuadrados y en la tabla “Ingresos por cancha”.
+  const d = await apiFetch(`/admin/dashboard?fecha=${inputFecha.value}`); //Asigna los valores segun la fecha seleccionada en panel administracion.
 
   document.getElementById('d-total').textContent = formatearPlata(d.total_recaudado);
   document.getElementById('d-totales').textContent = formatearPlata(d.pagos_totales.monto);
@@ -36,7 +38,7 @@ async function cargarDashboard() {
   document.getElementById('d-retenidos').textContent = formatearPlata(d.retenidos.monto);
   document.getElementById('d-retenidos-cant').textContent = cantidad(d.retenidos.cantidad, 'cancelación', 'cancelaciones');
 
-  document.getElementById('sin-ingresos').hidden = d.ingresos_por_cancha.length > 0;
+  document.getElementById('sin-ingresos').hidden = d.ingresos_por_cancha.length > 0; //muestra mensaje sin movimientos (definido en admin.html 39).
   document.getElementById('tabla-ingresos').innerHTML = d.ingresos_por_cancha.map((fila) => `
     <tr>
       <td>${escaparHTML(fila.club)}</td>
