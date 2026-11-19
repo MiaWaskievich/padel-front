@@ -22,9 +22,5 @@ Backend: [github.com/MiaWaskievich/padel-back](https://github.com/MiaWaskievich/
 | `css/styles.css` | Todos los estilos (verde y azul, responsive). |
 | `serve.json` | Configuración de `serve` (lo usa `iniciar_proyecto.bat` del back): desactiva las "clean URLs" para que las páginas mantengan su `.html`. |
 
-- **Opción 1:** doble clic en `padel-back/iniciar_proyecto.bat` (levanta el back, este front en
-  `http://localhost:5500` y abre el navegador). Las dos carpetas tienen que estar una al lado de la otra.
-- **Opción 2:** `npm run dev` en `padel-back` y, en VS Code, clic derecho en `index.html` →
-  **Open with Live Server** (`http://127.0.0.1:5500`).
 
 Usuario administrador de prueba: `admin@padel.com` / `admin123`.
