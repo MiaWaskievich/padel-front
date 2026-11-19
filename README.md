@@ -19,7 +19,7 @@ Backend: [github.com/MiaWaskievich/padel-back](https://github.com/MiaWaskievich/
 | `admin.html` + `js/admin.js` | Dashboard del día, reservas del día, horarios de turnos y alta de administradores. |
 | `js/config.js` | `API_URL` (local o Render) y `PORCENTAJE_SENA` (solo para mostrar la estimación). |
 | `js/api.js` | Funciones compartidas: sesión en `localStorage`, `apiFetch`, `exigirRol`, formato de plata y fechas, `escaparHTML` y la barra superior. |
-| `css/styles.css` | Todos los estilos (verde y azul, responsive). |
+| `css/styles.css` | Estilos. |
 | `serve.json` | Configuración de `serve` (lo usa `iniciar_proyecto.bat` del back): desactiva las "clean URLs" para que las páginas mantengan su `.html`. |
 
 
