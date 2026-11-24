@@ -19,28 +19,8 @@ Backend: [github.com/MiaWaskievich/padel-back](https://github.com/MiaWaskievich/
 | `admin.html` + `js/admin.js` | Dashboard del día, reservas del día, horarios de turnos y alta de administradores. |
 | `js/config.js` | `API_URL` (local o Render) y `PORCENTAJE_SENA` (solo para mostrar la estimación). |
 | `js/api.js` | Funciones compartidas: sesión en `localStorage`, `apiFetch`, `exigirRol`, formato de plata y fechas, `escaparHTML` y la barra superior. |
-| `css/styles.css` | Todos los estilos (verde y azul, responsive). |
+| `css/styles.css` | Estilos. |
 | `serve.json` | Configuración de `serve` (lo usa `iniciar_proyecto.bat` del back): desactiva las "clean URLs" para que las páginas mantengan su `.html`. |
 
-Cada página carga, en este orden: `js/config.js`, `js/api.js` y su propio script.
-
-## Conexión con el backend
-
-- **`js/config.js`** elige la URL de la API según dónde está abierta la página: en `localhost` o `127.0.0.1`
-  usa `http://localhost:3000/api`; en la web, la URL de Render.
-- **`js/api.js` → `apiFetch(ruta, opciones)`** hace todas las llamadas: agrega el header
-  `Authorization: Bearer <token>`, devuelve el JSON y, si hay error, lanza el mensaje `{ error }` del back.
-  Si la sesión venció (401), vuelve al login.
-- El back solo acepta llamadas desde los orígenes de su variable `FRONT_URL` (CORS), que en local incluye
-  `http://127.0.0.1:5500` y `http://localhost:5500`.
-
-## Cómo levantarlo en local
-
-Necesita **padel-back corriendo** en `http://localhost:3000` (ver su README).
-
-- **Opción 1:** doble clic en `padel-back/iniciar_proyecto.bat` (levanta el back, este front en
-  `http://localhost:5500` y abre el navegador). Las dos carpetas tienen que estar una al lado de la otra.
-- **Opción 2:** `npm run dev` en `padel-back` y, en VS Code, clic derecho en `index.html` →
-  **Open with Live Server** (`http://127.0.0.1:5500`).
 
 Usuario administrador de prueba: `admin@padel.com` / `admin123`.
