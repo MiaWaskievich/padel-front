@@ -210,7 +210,7 @@ async function actualizar() {
 // ---------- Pago simulado ----------
 
 // Valida el formato de los datos de la tarjeta. Devuelve el texto del error o '' si está todo bien.
-function validarTarjeta() {
+function validarTarjeta() { // solo revisa el formato
   const titular = document.getElementById('tarjeta-titular').value.trim();
   const numero = document.getElementById('tarjeta-numero').value.replace(/\s/g, '');
   const vencimiento = document.getElementById('tarjeta-vencimiento').value.trim();
@@ -245,10 +245,10 @@ function mostrarConfirmacion(datos) {
   seccionConfirmacion.scrollIntoView({ behavior: 'smooth' });
 }
 
-formPago.addEventListener('submit', async (evento) => {
-  evento.preventDefault();
+formPago.addEventListener('submit', async (evento) => { // se ejecuta al apretar el boton confirmar y pagar.
+  evento.preventDefault(); // impide que al recargarse la pagina por enviar el formulario se pierda el carrito.
 
-  const errorTarjeta = validarTarjeta();
+  const errorTarjeta = validarTarjeta(); // corrobora el formato de las casillas (MM/AA, CVV, etc).
   if (errorTarjeta) {
     mostrarMensaje(mensajePago, errorTarjeta, 'error');
     return;
@@ -259,7 +259,8 @@ formPago.addEventListener('submit', async (evento) => {
   }
 
   const botonConfirmar = document.getElementById('confirmar-pago');
-  botonConfirmar.disabled = true; // evita que se reserve dos veces por doble clic
+  botonConfirmar.disabled = true; // evita que se reserve dos veces por doble clic 
+  // (deshabilita mientras se procesa la reserva).
   mostrarMensaje(mensajePago, '');
 
   try {
@@ -289,49 +290,57 @@ formPago.addEventListener('submit', async (evento) => {
   }
 });
 
-// ---------- Inicio ----------
+//          Pagina Cliente
 
-async function iniciar() {
-  pintarEncabezado();
+async function iniciar() { //arma la pagina de cliente; se piden datos al back.
+  pintarEncabezado(); // encabezado azul, funcion en api.js
 
-  inputFecha.min = fechaHoy();
-  inputFecha.value = fechaHoy();
+  inputFecha.min = fechaHoy(); // devuelve la fecha con su formato, .min fija la fecha minima en el calendario.
+  inputFecha.value = fechaHoy(); // hace que el campo arranque con la fecha de hoy.
 
-  try {
-    clubes = await apiFetch('/clubes');
-  } catch (error) {
+  try { // pedir clubs al back
+    clubes = await apiFetch('/clubes'); //await espera hasta obtener los resultados, apifetch devuelve 
+    // la lista del clubs con sus canchas, guarda el resultado clubes.
+  } catch (error) { // si no se puede conectar con el back (algun error de internet) muestra un mensaje de error.
     mostrarMensaje(mensajeGrilla, error.message, 'error');
     return;
   }
   for (const club of clubes) {
-    const opcion = document.createElement('option');
-    opcion.value = club.id;
-    opcion.textContent = `${club.nombre} – ${club.direccion}`;
-    selectClub.appendChild(opcion);
+    const opcion = document.createElement('option'); //option de la club creada en la memoria ram, dentro 
+    // del navegador
+    opcion.value = club.id; // guarda el id del club
+    opcion.textContent = `${club.nombre} – ${club.direccion}`; //define lo que ve el usuario.
+    selectClub.appendChild(opcion); //lo agrega a la lista club.
   }
 
-  selectClub.addEventListener('change', cargarGrilla);
+  selectClub.addEventListener('change', cargarGrilla); //addevent le dice que cuando cambie el valor ejecute la funcion.
+  //si el usuario elige otro club u otra fecha, se ejecuta cargarGrilla(), 
+  //que pide la disponibilidad al back y vuelve a dibujar la grilla.
   inputFecha.addEventListener('change', cargarGrilla);
   document.querySelectorAll('input[name="tipo_pago"]').forEach((radio) => radio.addEventListener('change', dibujarCarrito));
+  // querySelectorAll('input[name="tipo_pago"]') busca los dos botones de opción del carrito: Seña (30%) y Pago total.
+  // forEach recorre los dos y les conecta el evento change.
+  // al cambiar la forma de pago se ejecuta dibujarCarrito(), que recalcula y muestra el total, lo que 
+  // se paga ahora y el saldo pendiente.
 
   botonIrAPagar.addEventListener('click', () => {
-    formPago.hidden = false;
-    mostrarMensaje(mensajePago, '');
-    document.getElementById('tarjeta-titular').focus();
+    formPago.hidden = false; // muestra formulario de tarjeta que arranca oculto.
+    mostrarMensaje(mensajePago, ''); // borra mensajes anteriores.
+    document.getElementById('tarjeta-titular').focus(); // para que el usuario empiece a escribir sin hacer clic.
   });
   document.getElementById('cancelar-pago').addEventListener('click', () => {
-    formPago.hidden = true;
+    formPago.hidden = true; // si aprieto volver se oculta el formulario de pago.
   });
   document.getElementById('cerrar-confirmacion').addEventListener('click', () => {
-    seccionConfirmacion.hidden = true;
+    seccionConfirmacion.hidden = true; //cierra el cuadro de reservas.
   });
 
-  dibujarCarrito();
+  dibujarCarrito(); //muestra el carrito con los turnos agregados.
   await cargarGrilla();
 
-  setInterval(actualizar, 10000); // cada 10 segundos
+  setInterval(actualizar, 10000); //temporizador cada 10 segundos.
 }
 
-if (exigirRol('cliente')) {
+if (exigirRol('cliente')) { // Pregunta si el rol iniciado es cliente, funcion en api.js 33.
   iniciar();
 }

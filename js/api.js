@@ -119,13 +119,20 @@ function pintarEncabezado() {
   const header = document.getElementById('encabezado');
   if (!header || !usuario) return;
 
+  // Links administrador
+  // #config identificador que permite dirigirse a la seccion de la pagina.
+  // admin panel no usa porque esta en la pagina principal.
   const links = usuario.rol === 'admin'
-    ? [['admin.html', 'Panel']]
+    ? [['admin.html', 'Panel'], ['admin.html#config', 'Configuración']]
     : [['reservar.html', 'Reservar'], ['mis-reservas.html', 'Mis reservas']];
 
   const marca = document.createElement('span');
   marca.className = 'marca';
-  marca.textContent = '🎾 Pádel Reservas';
+    const logo = document.createElement('img');
+  logo.src = 'imagen/icono-padel-claro.png';
+  logo.alt = '';
+  logo.className = 'logo-encabezado';
+  marca.append(logo, 'Pádel Reservas');
 
   const nav = document.createElement('nav');
   for (const [href, texto] of links) {

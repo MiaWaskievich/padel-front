@@ -10,6 +10,7 @@
   <header id="encabezado" class="encabezado"></header>
 
   <main class="contenedor">
+      <div id="vista-panel" class="vista">
     <section class="tarjeta">
       <h1>Panel de administración</h1>
       <div class="filtros">
@@ -53,8 +54,10 @@
         </table>
       </div>
       <p id="sin-reservas" class="ayuda" hidden>No hay reservas para esta fecha.</p>
-    </section>
+    </section>   
+  </div>
 
+    <div id="vista-config" class="vista" hidden>
     <section class="tarjeta angosta">
       <h2>Horarios de turnos</h2>
       <p class="ayuda">Los turnos duran 90 minutos. Los cambios se ven al instante en la grilla de reservas.</p>
@@ -85,6 +88,7 @@
       </form>
       <p id="mensaje-admin" class="mensaje" hidden></p>
     </section>
+  </div>
   </main>
 
   <script src="js/config.js"></script>

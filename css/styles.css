@@ -1,6 +1,5 @@
 /* css/styles.css
-   Único archivo de estilos de todas las páginas (index, reservar, mis-reservas, admin).
-   Colores de pádel: verde (canchas) y azul. */
+
 
 /* El navegador oculta los elementos con el atributo hidden usando display: none, pero esa regla
    es muy débil: cualquier clase con display (por ejemplo .formulario { display: flex }) la pisa
@@ -14,7 +13,7 @@
   --verde-oscuro: #157a41;
   --verde-claro: #e3f6ea;
   --azul: #1e4e9c;
-  --azul-oscuro: #163a75;
+  --azul-oscuro: #021c46;
   --azul-claro: #e6eefb;
   --amarillo: #f4c430;
   --amarillo-claro: #fff7d6;
@@ -22,7 +21,7 @@
   --rojo-claro: #fdecea;
   --gris: #9aa3ad;
   --gris-claro: #eef1f4;
-  --texto: #1f2933;
+  --texto: #021c46;
   --texto-suave: #5f6b77;
   --fondo: #f3f6f9;
   --blanco: #ffffff;
@@ -240,19 +239,32 @@ fieldset label {
 
 /* ---------- Login ---------- */
 
+.caja-login label,
+.caja-login .subtitulo,
+.caja-login .pestana {
+  color: #f3f6f9;
+}
+.caja-login .pestana.activa {
+  color: #f4c430;
+}
+
 .pagina-login {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background: linear-gradient(135deg, var(--azul) 0%, var(--verde) 100%);
+  background: 
+  linear-gradient(rgba(20, 33, 61, 0.55), rgba(20, 33, 61, 0.55)),
+    url('../imagen/fondopadel.jpeg') 
+    center / cover no-repeat;
 }
+
 
 .caja-login {
   width: 100%;
   max-width: 400px;
-  background: var(--blanco);
+  background: rgba(77, 77, 77, 0.85);
   border-radius: var(--radio);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   padding: 28px;
@@ -281,16 +293,14 @@ fieldset label {
   padding: 10px;
   border: none;
   background: none;
-  color: var(--texto-suave);
   cursor: pointer;
   border-bottom: 3px solid transparent;
   margin-bottom: -2px;
 }
 
 .pestana.activa {
-  color: var(--azul);
   font-weight: 600;
-  border-bottom-color: var(--verde);
+  border-bottom-color: #f4c430;
 }
 
 /* ---------- Tablas ---------- */
@@ -338,7 +348,6 @@ td.acciones .boton + .boton {
   font-weight: 600;
 }
 
-.estado.activa { background: var(--verde-claro); color: var(--verde-oscuro); }
 .estado.cancelada { background: var(--gris-claro); color: var(--texto-suave); }
 
 /* ---------- Grilla de turnos ---------- */
@@ -367,8 +376,6 @@ td.acciones .boton + .boton {
   cursor: pointer;
 }
 
-.turno.libre { background: var(--verde-claro); color: var(--verde-oscuro); }
-.turno.libre:hover { background: var(--verde); color: var(--blanco); }
 .turno.ocupado { background: var(--gris-claro); color: var(--gris); cursor: not-allowed; }
 .turno.en-carrito { background: var(--azul); color: var(--blanco); font-weight: 600; }
 
@@ -465,8 +472,6 @@ td.acciones .boton + .boton {
 .dato.destacado { background: var(--verde); }
 .dato.destacado span, .dato.destacado strong { color: var(--blanco); }
 
-.dato.alerta { background: var(--amarillo-claro); }
-
 /* ---------- Responsive ---------- */
 
 @media (max-width: 860px) {
@@ -480,5 +485,160 @@ td.acciones .boton + .boton {
 
   .encabezado .derecha {
     margin-left: 0;
+  }
+}
+/* Logo del login */
+.logo-login {
+  display: block;
+  width: 80px;
+  height: auto;
+  margin: 0 auto 8px;
+}
+
+/* Logo de la barra superior */
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-encabezado {
+  height: 40px;
+  width: auto;
+}
+
+/* Pagina cliente */
+
+/* Fondo: la foto de la cancha */
+body:not(.pagina-login) {
+  background:
+    linear-gradient(rgba(10, 20, 40, 0.85), rgba(10, 20, 40, 0.85)),
+    url('../imagen/fondopadel.jpeg') center / cover fixed;
+}
+
+/* Barra superior: oscura y semitransparente, como el recuadro del login */
+.encabezado {
+  background: rgba(10, 20, 40, 0.8);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Tarjetas: mismo gris translúcido que el recuadro del login */
+.tarjeta {
+  background: rgba(77, 77, 77, 0.85);
+  color: #e8edf3;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+.tarjeta h1 { color: #f4c430; }
+.tarjeta h2,
+.tarjeta h3 { color: #f3f6f9; }
+.tarjeta a { color: #f4c430; }
+
+/* Textos secundarios en gris claro */
+.tarjeta label,
+.tarjeta .ayuda,
+.referencias,
+.resumen dt { color: #c9d1db; }
+fieldset { border-color: rgba(255, 255, 255, 0.2); }
+.tarjeta fieldset label { color: #e8edf3; }
+
+/* Tablas */
+th, td { border-bottom-color: rgba(255, 255, 255, 0.12); }
+thead th {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+tr.cancelada td { color: #8a94a0; }
+.estado.cancelada {
+  background: rgba(255, 255, 255, 0.1);
+  color: #c9d1db;
+}
+
+/* Grilla de turnos */
+.grilla tbody th { color: #e8edf3; }
+.turno.libre { background: #3b4c69; color: #ffffff; }
+.turno.libre:hover { background: var(--verde-oscuro); }
+.turno.ocupado { background: rgba(255, 255, 255, 0.08); color: #8a94a0; }
+.turno.en-carrito { background: var(--verde); color: #ffffff; }
+.muestra.libre { background: #3b4c69; border-color: #3b4c69; }
+.muestra.ocupado { background: rgba(255, 255, 255, 0.15); border-color: #8a94a0; }
+.muestra.en-carrito { background: var(--verde); }
+
+/* Carrito */
+.lista-carrito li { border-bottom-color: rgba(255, 255, 255, 0.12); }
+.pago { border-top-color: rgba(255, 255, 255, 0.25); }
+
+/* Botón secundario (Cerrar sesión, Volver, Cerrar) */
+.boton.secundario {
+  background: transparent;
+  color: #f3f6f9;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+.boton.secundario:hover { background: rgba(255, 255, 255, 0.1); }
+
+/* Tarjetas del panel del administrador */
+.dato { background: rgba(255, 255, 255, 0.08); }
+.dato span,
+.dato small { color: #c9d1db; }
+.dato strong { color: #ffffff; }
+
+/* ---------- Ajustes del panel del administrador ---------- */
+
+/* 1. Más ancho para la página, así la tabla "Reservas del día" muestra los botones completos */
+.contenedor {
+  max-width: 1320px;
+}
+
+/* 2. Etiquetas de estado con el mismo estilo translúcido que el resto */
+.estado.activa {
+  background: rgba(31, 157, 85, 0.25);
+  color: #8be0ad;
+}
+
+/* 3. "Pagos parciales pendientes" sin tanto amarillo */
+.dato.alerta {
+  background: rgba(255, 255, 255, 0.08);
+  border-left: 4px solid #f4c430;
+}
+.dato.alerta strong {
+  color: #ffffff;
+}
+
+/* 4. Fondo oscuro de respaldo, por si la página es más larga que la pantalla */
+html {
+  background: #0a1428;
+}
+
+[hidden] { display: none !important; }
+
+header a.activo {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+/* Cada caja (Panel / Configuración) separa sus tarjetas con 20px, igual que .contenedor */
+.vista {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Configuración del admin: Horarios y Crear administrador uno al lado del otro */
+#vista-config {
+  display: grid;                    /* la caja pasa a ser una grilla en vez de una columna */
+  grid-template-columns: 1fr 1fr;   /* 2 columnas del mismo ancho (1fr = una parte del espacio libre) */
+  align-items: start;               /* cada tarjeta ocupa solo su alto: no se estira para igualar a la otra */
+}
+
+/* Las tarjetas "angostas" tienen un ancho máximo de 480px (línea 115).
+   Acá se lo sacamos para que cada una llene su columna. */
+#vista-config .tarjeta.angosta {
+  max-width: none;
+}
+
+/* En pantallas chicas (celular) no entran dos columnas: vuelven a quedar una debajo de la otra */
+@media (max-width: 860px) {
+  #vista-config {
+    grid-template-columns: 1fr;     /* 1 sola columna */
   }
 }

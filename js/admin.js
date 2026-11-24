@@ -192,8 +192,36 @@ document.getElementById('form-admin').addEventListener('submit', async (evento) 
   }
 });
 
+// ---------- Vistas: Panel / Configuración ----------
+
+// Muestra el Panel o la Configuración según lo que diga la dirección después del #
+function mostrarVista() {
+  // location.hash es lo que está después del # en la barra de direcciones.
+  // Si la dirección es admin.html#config, enConfig vale true; si no, false.
+  const enConfig = location.hash === '#config';
+
+  // hidden = true oculta el elemento; hidden = false lo muestra.
+  // Si estamos en Configuración, se oculta el Panel...
+  document.getElementById('vista-panel').hidden = enConfig;
+  // ...y se muestra la Configuración. Si no, al revés.
+  document.getElementById('vista-config').hidden = !enConfig;
+
+  // Recorre los links del encabezado (Panel y Configuración)
+  for (const a of document.querySelectorAll('#encabezado nav a')) {
+    // ¿Este link es el de Configuración?
+    const esLinkConfig = a.getAttribute('href') === 'admin.html#config';
+    // Le pone la clase "activo" (que lo resalta) solo al link de la vista que se está viendo,
+    // y se la saca al otro.
+    a.classList.toggle('activo', esLinkConfig === enConfig);
+  }
+}
+
 if (exigirRol('admin')) {
   pintarEncabezado();
+
+  mostrarVista();                // Al abrir la página, muestra la vista que corresponde
+  window.addEventListener('hashchange', mostrarVista); // Cada vez que cambia el # (al tocar
+  // un link), vuelve a elegir la vista.
   inputFecha.value = fechaHoy();
   document.getElementById('actualizar').addEventListener('click', () => {
     mostrarMensaje(mensaje, '');
