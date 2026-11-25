@@ -30,15 +30,17 @@ function cerrarSesion() {
 
 // Si no hay sesión o el rol no coincide, vuelve al login.
 // Devuelve true si puede seguir, así la página no arranca cuando se está yendo.
-function exigirRol(rol) {
+// Si no hay sesión o el rol del usuario no está entre los permitidos, vuelve al login.
+// Ejemplos: exigirRol('cliente')  o  exigirRol('admin', 'dueno')
+// "...roles" junta todos los roles que se pasen en una lista.
+function exigirRol(...roles) {
   const usuario = obtenerUsuario();
-  if (!obtenerToken() || !usuario || usuario.rol !== rol) {
+  if (!obtenerToken() || !usuario || !roles.includes(usuario.rol)) {
     location.href = 'index.html';
     return false;
   }
   return true;
 }
-
 // ---------- Llamadas a la API ----------
 
 // Ejemplo: apiFetch('/reservas', { method: 'POST', body: JSON.stringify({...}) })
@@ -122,9 +124,17 @@ function pintarEncabezado() {
   // Links administrador
   // #config identificador que permite dirigirse a la seccion de la pagina.
   // admin panel no usa porque esta en la pagina principal.
-  const links = usuario.rol === 'admin'
-    ? [['admin.html', 'Panel'], ['admin.html#config', 'Configuración']]
-    : [['reservar.html', 'Reservar'], ['mis-reservas.html', 'Mis reservas']];
+    let links;
+  if (usuario.rol === 'admin') {
+    // El admin ve el panel y la configuración (horarios y alta de dueños)
+    links = [['admin.html', 'Panel'], ['admin.html#config', 'Configuración']];
+  } else if (usuario.rol === 'dueno') {
+    // El dueño solo ve el panel de su club
+    links = [['admin.html', 'Panel']];
+  } else {
+    // El cliente reserva y ve sus reservas
+    links = [['reservar.html', 'Reservar'], ['mis-reservas.html', 'Mis reservas']];
+  }
 
   const marca = document.createElement('span');
   marca.className = 'marca';

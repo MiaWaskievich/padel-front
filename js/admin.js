@@ -17,6 +17,11 @@ const inputFecha = document.getElementById('fecha'); //busca en el HTML el eleme
 // el <input type="date"> del panel. Lo guarda en inputFecha para no tener que buscarlo cada vez.
 const mensaje = document.getElementById('mensaje'); //es el mensaje donde se muestran los errores o avisos del dashboard.
 
+// Usuario logueado y si es admin. Se usa para decidir qué partes del panel se muestran.
+// (Si no hay sesión, exigirRol más abajo lo manda al login)
+const usuarioLogueado = obtenerUsuario();
+const esAdmin = usuarioLogueado !== null && usuarioLogueado.rol === 'admin';
+
 // Texto "N pagos" / "1 pago" para debajo de cada monto
 function cantidad(n, singular, plural) {
   return `${n} ${n === 1 ? singular : plural}`; //Si n es 1 usa singular, sino, plural.
@@ -171,26 +176,94 @@ document.getElementById('form-horario').addEventListener('submit', async (evento
   cargarHorarios();
 });
 
-// Alta de otro administrador
-document.getElementById('form-admin').addEventListener('submit', async (evento) => {
-  evento.preventDefault();
+// ---------- Alta de dueños de club (solo admin) ----------
+
+// Llena el <select> con la lista de clubes
+async function cargarClubesSelect() {
+  const clubes = await apiFetch('/clubes');           // GET /api/clubes: lista de clubes
+  const select = document.getElementById('dueno-club');
+  select.replaceChildren();                            // lo vacía por si ya tenía opciones
+  for (const club of clubes) {
+    const opcion = document.createElement('option');
+    opcion.value = club.id;                            // lo que se manda al back
+    opcion.textContent = club.nombre;                  // lo que ve el admin
+    select.appendChild(opcion);
+  }
+}
+
+// Al enviar el formulario se crea el dueño con el club elegido
+document.getElementById('form-dueno').addEventListener('submit', async (evento) => {
+  evento.preventDefault();                             // evita que la página se recargue
   const formulario = evento.target;
-  const mensajeAdmin = document.getElementById('mensaje-admin');
+  const mensajeDueno = document.getElementById('mensaje-dueno');
   try {
     const nuevo = await apiFetch('/admin/usuarios', {
       method: 'POST',
       body: JSON.stringify({
-        nombre: document.getElementById('admin-nombre').value.trim(),
-        email: document.getElementById('admin-email').value.trim(),
-        password: document.getElementById('admin-password').value
+        nombre: document.getElementById('dueno-nombre').value.trim(),
+        email: document.getElementById('dueno-email').value.trim(),
+        password: document.getElementById('dueno-password').value,
+        club_id: Number(document.getElementById('dueno-club').value) // id del club elegido
       })
     });
-    mostrarMensaje(mensajeAdmin, `Administrador ${nuevo.email} creado.`, 'exito');
-    formulario.reset();
+    mostrarMensaje(mensajeDueno, `Dueño ${nuevo.email} creado.`, 'exito');
+    formulario.reset();                                // limpia los campos
+        mostrarMensaje(mensajeDueno, `Dueño ${nuevo.email} creado.`, 'exito');
+    formulario.reset();                                // limpia los campos
+    cargarDuenos();                                    // el dueño nuevo aparece en la lista
   } catch (error) {
-    mostrarMensaje(mensajeAdmin, error.message, 'error');
+    mostrarMensaje(mensajeDueno, error.message, 'error');
   }
 });
+
+// ---------- Lista de dueños (solo admin) ----------
+
+// Pide al back la lista de dueños y arma un renglón por cada uno con su botón "Eliminar"
+async function cargarDuenos() {
+  const mensajeDueno = document.getElementById('mensaje-dueno');
+  let duenos;
+  try {
+    duenos = await apiFetch('/admin/duenos');          // GET /api/admin/duenos
+  } catch (error) {
+    mostrarMensaje(mensajeDueno, error.message, 'error');
+    return;
+  }
+
+  const lista = document.getElementById('lista-duenos');
+  lista.replaceChildren();                             // vacía la lista antes de volver a llenarla
+  for (const dueno of duenos) {
+    const li = document.createElement('li');
+
+    // Izquierda: nombre en negrita y, abajo, email y club en letra chica
+    const datos = document.createElement('div');
+    const nombre = document.createElement('strong');
+    nombre.textContent = dueno.nombre;
+    const detalle = document.createElement('small');
+    detalle.textContent = `${dueno.email} · ${dueno.club || 'sin club'}`;
+    datos.append(nombre, document.createElement('br'), detalle);
+
+    // Derecha: el botón (crearBoton ya existe más arriba en este archivo)
+    li.append(datos, crearBoton('Eliminar', 'boton peligro chico', () => eliminarDueno(dueno)));
+    lista.appendChild(li);
+  }
+
+  // Si no hay dueños, muestra el texto "Todavía no hay dueños cargados."
+  document.getElementById('sin-duenos').hidden = duenos.length > 0;
+}
+
+// Pregunta si está seguro, le pide al back que borre el dueño y recarga la lista
+async function eliminarDueno(dueno) {
+  if (!confirm(`¿Eliminar al dueño ${dueno.nombre} (${dueno.email})? Ya no va a poder ingresar.`)) return;
+
+  const mensajeDueno = document.getElementById('mensaje-dueno');
+  try {
+    const respuesta = await apiFetch(`/admin/duenos/${dueno.id}`, { method: 'DELETE' });
+    mostrarMensaje(mensajeDueno, respuesta.mensaje, 'exito');   // "Dueño eliminado"
+  } catch (error) {
+    mostrarMensaje(mensajeDueno, error.message, 'error');
+  }
+  cargarDuenos();                                      // vuelve a pedir la lista ya actualizada
+}
 
 // ---------- Vistas: Panel / Configuración ----------
 
@@ -198,7 +271,9 @@ document.getElementById('form-admin').addEventListener('submit', async (evento) 
 function mostrarVista() {
   // location.hash es lo que está después del # en la barra de direcciones.
   // Si la dirección es admin.html#config, enConfig vale true; si no, false.
-  const enConfig = location.hash === '#config';
+  // Solo el admin puede ver Configuración. Aunque un dueño escriba #config
+  // a mano en la dirección, enConfig queda en false y sigue viendo el Panel.
+  const enConfig = location.hash === '#config' && esAdmin;
 
   // hidden = true oculta el elemento; hidden = false lo muestra.
   // Si estamos en Configuración, se oculta el Panel...
@@ -216,17 +291,27 @@ function mostrarVista() {
   }
 }
 
-if (exigirRol('admin')) {
-  pintarEncabezado();
+if (exigirRol('admin', 'dueno')) {   // entran admin y dueño; cualquier otro vuelve al login
+  pintarEncabezado();                // arma el encabezado (el dueño solo ve "Panel")
 
-  mostrarVista();                // Al abrir la página, muestra la vista que corresponde
-  window.addEventListener('hashchange', mostrarVista); // Cada vez que cambia el # (al tocar
-  // un link), vuelve a elegir la vista.
+  mostrarVista();                    // muestra la vista que corresponde
+  window.addEventListener('hashchange', mostrarVista); // y la cambia al tocar un link
+
   inputFecha.value = fechaHoy();
   document.getElementById('actualizar').addEventListener('click', () => {
     mostrarMensaje(mensaje, '');
     actualizar();
   });
-  actualizar();
-  cargarHorarios();
+  actualizar(); // dashboard y reservas: si es dueño, el back ya devuelve solo su club
+
+  if (esAdmin) {
+    // Solo el admin carga lo de Configuración (al dueño el back le respondería 403)
+    cargarHorarios();
+    cargarDuenos();                  // lista de dueños con su botón Eliminar
+    cargarClubesSelect().catch((error) =>
+      mostrarMensaje(document.getElementById('mensaje-dueno'), error.message, 'error'));
+  } else {
+    // El dueño ve un título acorde
+    document.getElementById('titulo-panel').textContent = 'Panel de mi club';
+  }
 }

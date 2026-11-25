@@ -12,7 +12,8 @@ const mensaje = document.getElementById('mensaje');
 
 // Lleva a la página que corresponde según el rol
 function irSegunRol(usuario) {
-  location.href = usuario.rol === 'admin' ? 'admin.html' : 'reservar.html';
+    // El admin y el dueño usan el mismo panel (admin.html); el cliente va a reservar
+  location.href = (usuario.rol === 'admin' || usuario.rol === 'dueno') ? 'admin.html' : 'reservar.html';
 }
 
 // Si ya hay sesión, no tiene sentido mostrar el login

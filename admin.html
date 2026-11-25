@@ -12,7 +12,7 @@
   <main class="contenedor">
       <div id="vista-panel" class="vista">
     <section class="tarjeta">
-      <h1>Panel de administración</h1>
+      <h1 id="titulo-panel">Panel de administración</h1>
       <div class="filtros">
         <label>Fecha
           <input type="date" id="fecha">
@@ -72,21 +72,30 @@
       <p id="mensaje-horarios" class="mensaje" hidden></p>
     </section>
 
-    <section class="tarjeta angosta">
-      <h2>Crear administrador</h2>
-      <form id="form-admin" class="formulario">
+        <section class="tarjeta angosta">
+      <h2>Crear dueño de club</h2>
+      <form id="form-dueno" class="formulario">
         <label>Nombre
-          <input type="text" id="admin-nombre" required>
+          <input type="text" id="dueno-nombre" required>
         </label>
         <label>Email
-          <input type="email" id="admin-email" required>
+          <input type="email" id="dueno-email" required>
         </label>
         <label>Contraseña (mínimo 6 caracteres)
-          <input type="password" id="admin-password" required minlength="6" autocomplete="new-password">
+          <input type="password" id="dueno-password" required minlength="6" autocomplete="new-password">
         </label>
-        <button type="submit" class="boton">Crear administrador</button>
+        <label>Club que administra
+          <!-- Vacío: lo llena js/admin.js con la lista de clubes -->
+          <select id="dueno-club" required></select>
+        </label>
+        <button type="submit" class="boton">Crear dueño</button>
       </form>
-      <p id="mensaje-admin" class="mensaje" hidden></p>
+      <p id="mensaje-dueno" class="mensaje" hidden></p>
+      
+      <h3>Dueños registrados</h3>
+      <!-- Vacía: la llena js/admin.js con un renglón por dueño y su botón Eliminar -->
+      <ul id="lista-duenos" class="lista-carrito"></ul>
+      <p id="sin-duenos" class="ayuda" hidden>Todavía no hay dueños cargados.</p>
     </section>
   </div>
   </main>
