@@ -177,17 +177,40 @@ document.getElementById('form-horario').addEventListener('submit', async (evento
 });
 
 // ---------- Alta de dueños de club (solo admin) ----------
-
-// Llena el <select> con la lista de clubes
+// Pide los clubes (con sus canchas) y llena los dos <select> de clubes y la lista "Clubes cargados".
+// Se llama al abrir la página y cada vez que se crea un club o una cancha.
 async function cargarClubesSelect() {
-  const clubes = await apiFetch('/clubes');           // GET /api/clubes: lista de clubes
-  const select = document.getElementById('dueno-club');
-  select.replaceChildren();                            // lo vacía por si ya tenía opciones
+  const clubes = await apiFetch('/clubes');           // GET /api/clubes: clubes con sus canchas
+
+  // Los dos <select>: el de "Crear dueño" y el de "Agregar cancha"
+  for (const id of ['dueno-club', 'cancha-club']) {
+    const select = document.getElementById(id);
+    const elegido = select.value;                      // recuerda la opción elegida
+    select.replaceChildren();                          // lo vacía por si ya tenía opciones
+    for (const club of clubes) {
+      const opcion = document.createElement('option');
+      opcion.value = club.id;                          // lo que se manda al back
+      opcion.textContent = club.nombre;                // lo que ve el admin
+      select.appendChild(opcion);
+    }
+    if (elegido) select.value = elegido;               // vuelve a dejar la que estaba elegida
+  }
+
+  // Lista "Clubes cargados": nombre, dirección y sus canchas con el precio
+  const lista = document.getElementById('lista-clubes');
+  lista.replaceChildren();
   for (const club of clubes) {
-    const opcion = document.createElement('option');
-    opcion.value = club.id;                            // lo que se manda al back
-    opcion.textContent = club.nombre;                  // lo que ve el admin
-    select.appendChild(opcion);
+    const li = document.createElement('li');
+    const datos = document.createElement('div');
+    const nombre = document.createElement('strong');
+    nombre.textContent = club.nombre;                  // textContent: no permite insertar HTML (evita XSS)
+    const detalle = document.createElement('small');
+    detalle.textContent = club.canchas.length
+      ? `${club.direccion} · ` + club.canchas.map((c) => `${c.nombre} (${formatearPlata(c.precio_turno)})`).join(', ')
+      : `${club.direccion} · Sin canchas: agregale al menos una para poder reservar`;
+    datos.append(nombre, document.createElement('br'), detalle);
+    li.appendChild(datos);
+    lista.appendChild(li);
   }
 }
 
@@ -213,6 +236,55 @@ document.getElementById('form-dueno').addEventListener('submit', async (evento) 
     cargarDuenos();                                    // el dueño nuevo aparece en la lista
   } catch (error) {
     mostrarMensaje(mensajeDueno, error.message, 'error');
+  }
+});
+
+// ---------- Clubes y canchas (solo admin) ----------
+
+// Crear club: al terminar, recarga las listas y deja elegido el club nuevo
+document.getElementById('form-club').addEventListener('submit', async (evento) => {
+  evento.preventDefault();                             // evita que la página se recargue
+  const formulario = evento.target;
+  const mensajeClubes = document.getElementById('mensaje-clubes');
+  try {
+    const nuevo = await apiFetch('/admin/clubes', {    // POST /api/admin/clubes
+      method: 'POST',
+      body: JSON.stringify({
+        nombre: document.getElementById('club-nombre').value.trim(),
+        direccion: document.getElementById('club-direccion').value.trim()
+      })
+    });
+    formulario.reset();                                // limpia los campos
+    await cargarClubesSelect();                        // vuelve a pedir la lista con el club nuevo
+    // Deja elegido el club nuevo en "Agregar cancha" y en "Crear dueño"
+    document.getElementById('cancha-club').value = nuevo.id;
+    document.getElementById('dueno-club').value = nuevo.id;
+    mostrarMensaje(mensajeClubes, `Club "${nuevo.nombre}" creado. Ahora agregale sus canchas.`, 'exito');
+  } catch (error) {
+    mostrarMensaje(mensajeClubes, error.message, 'error');
+  }
+});
+
+// Agregar cancha al club elegido
+document.getElementById('form-cancha').addEventListener('submit', async (evento) => {
+  evento.preventDefault();
+  const mensajeClubes = document.getElementById('mensaje-clubes');
+  try {
+    const nueva = await apiFetch('/admin/canchas', {   // POST /api/admin/canchas
+      method: 'POST',
+      body: JSON.stringify({
+        club_id: Number(document.getElementById('cancha-club').value),
+        nombre: document.getElementById('cancha-nombre').value.trim(),
+        precio_turno: Number(document.getElementById('cancha-precio').value)
+      })
+    });
+    // Limpia solo nombre y precio: el club queda elegido para cargar otra cancha seguida
+    document.getElementById('cancha-nombre').value = '';
+    document.getElementById('cancha-precio').value = '';
+    await cargarClubesSelect();                        // actualiza la lista "Clubes cargados"
+    mostrarMensaje(mensajeClubes, `Cancha "${nueva.nombre}" agregada.`, 'exito');
+  } catch (error) {
+    mostrarMensaje(mensajeClubes, error.message, 'error');
   }
 });
 

@@ -97,6 +97,42 @@
       <ul id="lista-duenos" class="lista-carrito"></ul>
       <p id="sin-duenos" class="ayuda" hidden>Todavía no hay dueños cargados.</p>
     </section>
+    
+    <section class="tarjeta angosta">
+      <h2>Clubes y canchas</h2>
+      <p class="ayuda">Si el dueño es de un club nuevo, crealo acá y agregale sus canchas antes de crear el dueño.</p>
+
+      <h3>Crear club</h3>
+      <form id="form-club" class="formulario">
+        <label>Nombre del club
+          <input type="text" id="club-nombre" required maxlength="100">
+        </label>
+        <label>Dirección
+          <input type="text" id="club-direccion" required maxlength="200">
+        </label>
+        <button type="submit" class="boton">Crear club</button>
+      </form>
+
+      <h3>Agregar cancha</h3>
+      <form id="form-cancha" class="formulario">
+        <label>Club
+          <!-- Vacío: lo llena js/admin.js con la lista de clubes -->
+          <select id="cancha-club" required></select>
+        </label>
+        <label>Nombre de la cancha
+          <input type="text" id="cancha-nombre" required maxlength="100" placeholder="Ej.: Cancha 1 (cristal)">
+        </label>
+        <label>Precio del turno ($)
+          <input type="number" id="cancha-precio" required min="1" step="1">
+        </label>
+        <button type="submit" class="boton">Agregar cancha</button>
+      </form>
+      <p id="mensaje-clubes" class="mensaje" hidden></p>
+
+      <h3>Clubes cargados</h3>
+      <!-- Vacía: la llena js/admin.js con cada club y sus canchas -->
+      <ul id="lista-clubes" class="lista-carrito"></ul>
+    </section>
   </div>
   </main>
 
